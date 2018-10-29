@@ -1,0 +1,24 @@
+PATH
+  remote: .
+  specs:
+    ridgepole-executor (0.1.0)
+      swiftcore-tasks
+
+GEM
+  remote: https://rubygems.org./
+  specs:
+    minitest (5.11.3)
+    rake (10.5.0)
+    swiftcore-tasks (0.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.16)
+  minitest (~> 5.0)
+  rake (~> 10.0)
+  ridgepole-executor!
+
+BUNDLED WITH
+   1.16.3
