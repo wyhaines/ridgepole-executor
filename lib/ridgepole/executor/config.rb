@@ -26,6 +26,18 @@ module Ridgepole
         @config[key] = val
       end
 
+      def merge(other)
+        @config.merge(other)
+      end
+
+      def merge!(other)
+        @config.merge!(other)
+      end
+
+      def to_hash
+        @config
+      end
+
       def method_missing(meth, *args, &block)
         if @config.key?(meth) || @config.key?(meth.to_s)
           @config[meth] || @config[meth.to_s]

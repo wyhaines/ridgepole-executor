@@ -93,7 +93,7 @@ module Ridgepole
         opts.on('-a', '--adapter ADAPTER') do |adapter|
           @configuration[:adapter] = adapter
         end
-        call_list << Task.new(0) do
+        call_list << Task.new(100) do
           setup_plugin(
             :adapter,
             "ridgepole/executor/adapter/#{@configuration[:adapter]}"
@@ -105,7 +105,7 @@ module Ridgepole
         opts.on('-m', '--migrator MIGRATOR') do |migrator|
           @configuration[:migrator] = migrator
         end
-        call_list << Task.new(0) do
+        call_list << Task.new(1000) do
           setup_plugin(
             :migrator,
             "ridgepole/executor/migrator/#{@configuration[:migrator]}"
