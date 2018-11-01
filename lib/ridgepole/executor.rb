@@ -18,8 +18,18 @@ module Ridgepole
       @cli = Cli.new
     end
 
+    def config
+      @cli.config
+    end
+
     def run
       @cli.run
+
+      if config[:migrator].will_handle?
+        config[:migrator].do
+      else
+        config[:adapter].do
+      end
     end
   end
 end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'optparse'
 require 'swiftcore/tasks'
 require 'ridgepole/executor/config'
@@ -10,6 +11,8 @@ module Ridgepole
     # rubocop: disable Metrics/ClassLength
     # Handle the command line parsing.
     class Cli
+      attr_reader :config
+
       def initialize
         @config = Config.new
         @config[:adapter] = 'mysqlcli'
@@ -49,6 +52,8 @@ module Ridgepole
       def _opt_help(opts, call_list)
         exe = File.basename($PROGRAM_NAME)
         text = <<~EHELP
+          #{exe} version #{Ridgepole::Executor::VERSION}
+
           #{exe} SQL JSONCONFIG
           #{exe} [OPTIONS] -- SQL JSONCONFIG
 
@@ -78,6 +83,7 @@ module Ridgepole
             The database migrator to use.
             Installed database migrators:
             #{installed_migrators}
+
         EHELP
         opts.on('-I', '-?', '--help') do
           @metaconfig[:helptext] << text
@@ -91,24 +97,24 @@ module Ridgepole
 
       def _opt_adapter(opts, call_list)
         opts.on('-a', '--adapter ADAPTER') do |adapter|
-          @configuration[:adapter] = adapter
+          @config[:adapter] = adapter
         end
         call_list << Task.new(100) do
           setup_plugin(
             :adapter,
-            "ridgepole/executor/adapter/#{@configuration[:adapter]}"
+            "ridgepole/executor/adapter/#{@config[:adapter]}"
           )
         end
       end
 
       def _opt_migrator(opts, call_list)
         opts.on('-m', '--migrator MIGRATOR') do |migrator|
-          @configuration[:migrator] = migrator
+          @config[:migrator] = migrator
         end
         call_list << Task.new(1000) do
           setup_plugin(
             :migrator,
-            "ridgepole/executor/migrator/#{@configuration[:migrator]}"
+            "ridgepole/executor/migrator/#{@config[:migrator]}"
           )
         end
       end
@@ -143,16 +149,20 @@ module Ridgepole
 
       def setup_plugin(type, libname)
         require libname
-        klass = classname(libname.split(%r{/}).collect(&:capitalize))
-        @configuration[type] = klass
-        return unless @configuration[type].respond_to? :parse
 
-        @configuration[type]
-          .parse(@configuration, @metaconfig)
+        klass = classname(libname.split(%r{/}).collect(&:capitalize))
+        @config[type] = klass.new
+        return unless @config[type].respond_to? :parse
+
+        @config[type]
+          .parse(@config, @metaconfig)
       end
 
       def run
         parse.run
+        @config[:sql] = ARGV[0] if ARGV[0]
+        json_config = JSON.parse(ARGV[1] || '{}')
+        @config.merge!(json_config)
       end
     end
     # rubocop: enable Metrics/ClassLength
