@@ -9,3 +9,4 @@ class Ridgepole::ExecutorCliTest < Minitest::Test
     cli = Ridgepole::Executor::Cli.new
   end
 end
+# rubocop: enable Style/ClassAndModuleChildren
