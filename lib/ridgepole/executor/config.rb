@@ -19,7 +19,7 @@ module Ridgepole
       end
 
       def [](val)
-        @config[val]
+        @config[val.to_sym] || @config[val.to_s]
       end
 
       def []=(key, val)

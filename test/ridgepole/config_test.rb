@@ -39,7 +39,9 @@ class Ridgepole::ExecutorConfigTest < Minitest::Test
 
   def check_standard(config)
     assert config['adapter'] == 'mysql2'
+    assert config[:adapter] == 'mysql2'
     assert config['max_load'] == 'Threads_running=90'
+    assert config[:max_load] == 'Threads_running=90'
     assert config.username == 'root'
   end
 
